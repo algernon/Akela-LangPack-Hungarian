@@ -41,13 +41,15 @@ static void tap_key(uint8_t key_code) {
   Keyboard.sendReport();
 }
 
-Key
-Hungarian::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_state) {
+bool Hungarian::eventHandlerHook(Key &mapped_key, const EventKey &eventKey) {
   if (mapped_key.raw < HUNGARIAN_FIRST || mapped_key.raw > HUNGARIAN_LAST)
-    return mapped_key;
+    return true;
 
-  if (!keyToggledOn(key_state))
-    return Key_NoKey;
+  mapped_key = Key_NoKey;
+
+  if (!keyToggledOn(eventKey.keyState_)) {
+    return false;
+  }
 
   bool need_shift = Keyboard.isModifierActive(Key_LeftShift.keyCode) ||
                     ::OneShot.isModifierActive(Key_LeftShift);
@@ -110,15 +112,7 @@ Hungarian::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_stat
 
   tap_key(kc);
 
-  return Key_NoKey;
-}
-
-Hungarian::Hungarian(void) {
-}
-
-void
-Hungarian::begin(void) {
-  Kaleidoscope.useEventHandlerHook(eventHandlerHook);
+  return false;
 }
 
 }

@@ -1,6 +1,6 @@
 /* -*- mode: c++ -*-
  * Kaleidoscope-LangPack-Hungarian -- Hungarian language support
- * Copyright (C) 2016, 2017  Gergely Nagy
+ * Copyright (C) 2016, 2017, 2018  Gergely Nagy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,12 +40,9 @@ enum {
 
 class Hungarian : public KaleidoscopePlugin {
  public:
-  Hungarian(void);
+  Hungarian(void) {};
 
-  void begin(void) final;
-
- private:
-  static Key eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_state);
+  bool eventHandlerHook(Key &mapped_key, const EventKey &eventKey);
 };
 
 }
