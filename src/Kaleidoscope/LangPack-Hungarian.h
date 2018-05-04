@@ -38,11 +38,11 @@ enum {
   HUNGARIAN_LAST = HUN_IA,
 };
 
-class Hungarian : public KaleidoscopePlugin {
+class Hungarian : public kaleidoscope::Plugin {
  public:
   Hungarian(void) {};
 
-  bool eventHandlerHook(Key &mapped_key, const EventKey &eventKey);
+  bool eventHandlerHook(Key &mapped_key, byte row, byte col, uint8_t keyState);
 };
 
 }

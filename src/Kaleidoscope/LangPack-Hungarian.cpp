@@ -41,13 +41,13 @@ static void tap_key(uint8_t key_code) {
   Keyboard.sendReport();
 }
 
-bool Hungarian::eventHandlerHook(Key &mapped_key, const EventKey &eventKey) {
+bool Hungarian::eventHandlerHook(Key &mapped_key, byte row, byte col, uint8_t keyState) {
   if (mapped_key.raw < HUNGARIAN_FIRST || mapped_key.raw > HUNGARIAN_LAST)
     return true;
 
   mapped_key = Key_NoKey;
 
-  if (!keyToggledOn(eventKey.keyState_)) {
+  if (!keyToggledOn(keyState)) {
     return false;
   }
 
