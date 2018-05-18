@@ -42,7 +42,7 @@ class Hungarian : public kaleidoscope::Plugin {
  public:
   Hungarian(void) {};
 
-  bool eventHandlerHook(Key &mapped_key, byte row, byte col, uint8_t keyState);
+  EventHandlerResult onKeyswitchEvent(Key &mapped_key, byte row, byte col, uint8_t keyState);
 };
 
 }

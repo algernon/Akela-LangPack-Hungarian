@@ -34,27 +34,25 @@ typedef enum {
 namespace kaleidoscope {
 namespace language {
 
-static void tap_key(uint8_t key_code) {
-  Keyboard.press(key_code);
-  Keyboard.sendReport();
-  Keyboard.release(key_code);
-  Keyboard.sendReport();
+static void tap_key(Key key) {
+  handleKeyswitchEvent(key, UNKNOWN_KEYSWITCH_LOCATION, IS_PRESSED | INJECTED);
+  hid::sendKeyboardReport();
+  handleKeyswitchEvent(key, UNKNOWN_KEYSWITCH_LOCATION, WAS_PRESSED | INJECTED);
+  hid::sendKeyboardReport();
 }
 
-bool Hungarian::eventHandlerHook(Key &mapped_key, byte row, byte col, uint8_t keyState) {
+EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, byte row, byte col, uint8_t keyState) {
   if (mapped_key.raw < HUNGARIAN_FIRST || mapped_key.raw > HUNGARIAN_LAST)
-    return true;
-
-  mapped_key = Key_NoKey;
+    return EventHandlerResult::OK;
 
   if (!keyToggledOn(keyState)) {
-    return false;
+    return EventHandlerResult::EVENT_CONSUMED;
   }
 
-  bool need_shift = Keyboard.isModifierActive(Key_LeftShift.keyCode) ||
+  bool need_shift = hid::isModifierKeyActive(Key_LeftShift) ||
                     ::OneShot.isModifierActive(Key_LeftShift);
 
-  tap_key(Key_RightAlt.keyCode);
+  tap_key(Key_RightAlt);
 
   HungarianSymbol symbol = (HungarianSymbol)(mapped_key.raw - HUNGARIAN_FIRST);
   Key accent;
@@ -98,21 +96,23 @@ bool Hungarian::eventHandlerHook(Key &mapped_key, byte row, byte col, uint8_t ke
   }
 
   if (accent.flags & SHIFT_HELD)
-    Keyboard.press(Key_LeftShift.keyCode);
+    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, IS_PRESSED | INJECTED);
   else
-    Keyboard.release(Key_LeftShift.keyCode);
-  Keyboard.sendReport();
+    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, WAS_PRESSED | INJECTED);
+  hid::sendKeyboardReport();
 
-  tap_key(accent.keyCode);
+  tap_key(accent);
 
   if (need_shift)
-    Keyboard.press(Key_LeftShift.keyCode);
+    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, IS_PRESSED | INJECTED);
   else
-    Keyboard.release(Key_LeftShift.keyCode);
+    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, WAS_PRESSED | INJECTED);
 
-  tap_key(kc);
+  mapped_key = kc;
 
-  return false;
+  hid::sendKeyboardReport();
+
+  return EventHandlerResult::OK;
 }
 
 }
