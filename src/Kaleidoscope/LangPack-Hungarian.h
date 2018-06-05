@@ -42,6 +42,8 @@ class Hungarian : public kaleidoscope::Plugin {
  public:
   Hungarian(void) {};
 
+  Key compose_key = Key_RightAlt;
+
   EventHandlerResult onKeyswitchEvent(Key &mapped_key, byte row, byte col, uint8_t keyState);
 };
 

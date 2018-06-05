@@ -52,7 +52,7 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, byte row, byte c
   bool need_shift = hid::isModifierKeyActive(Key_LeftShift) ||
                     ::OneShot.isModifierActive(Key_LeftShift);
 
-  tap_key(Key_RightAlt);
+  tap_key(compose_key);
 
   HungarianSymbol symbol = (HungarianSymbol)(mapped_key.raw - HUNGARIAN_FIRST);
   Key accent;
