@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <Kaleidoscope.h>
 #include <Kaleidoscope-LangPack-Hungarian.h>
 #include <Kaleidoscope-OneShot.h>
 
@@ -35,13 +36,13 @@ namespace kaleidoscope {
 namespace language {
 
 static void tap_key(Key key) {
-  handleKeyswitchEvent(key, UNKNOWN_KEYSWITCH_LOCATION, IS_PRESSED | INJECTED);
+  handleKeyswitchEvent(key, UnknownKeyswitchLocation, IS_PRESSED | INJECTED);
   hid::sendKeyboardReport();
-  handleKeyswitchEvent(key, UNKNOWN_KEYSWITCH_LOCATION, WAS_PRESSED | INJECTED);
+  handleKeyswitchEvent(key, UnknownKeyswitchLocation, WAS_PRESSED | INJECTED);
   hid::sendKeyboardReport();
 }
 
-EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, byte row, byte col, uint8_t keyState) {
+EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t keyState) {
   if (mapped_key.raw < HUNGARIAN_FIRST || mapped_key.raw > HUNGARIAN_LAST)
     return EventHandlerResult::OK;
 
@@ -96,17 +97,17 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, byte row, byte c
   }
 
   if (accent.flags & SHIFT_HELD)
-    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, IS_PRESSED | INJECTED);
+    handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, IS_PRESSED | INJECTED);
   else
-    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, WAS_PRESSED | INJECTED);
+    handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, WAS_PRESSED | INJECTED);
   hid::sendKeyboardReport();
 
   tap_key(accent);
 
   if (need_shift)
-    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, IS_PRESSED | INJECTED);
+    handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, IS_PRESSED | INJECTED);
   else
-    handleKeyswitchEvent(Key_LeftShift, UNKNOWN_KEYSWITCH_LOCATION, WAS_PRESSED | INJECTED);
+    handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, WAS_PRESSED | INJECTED);
 
   mapped_key = kc;
 
