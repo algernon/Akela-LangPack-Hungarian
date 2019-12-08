@@ -43,7 +43,7 @@ static void tap_key(Key key) {
 }
 
 EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t keyState) {
-  if (mapped_key.raw < HUNGARIAN_FIRST || mapped_key.raw > HUNGARIAN_LAST)
+  if (mapped_key.getRaw() < HUNGARIAN_FIRST || mapped_key.getRaw() > HUNGARIAN_LAST)
     return EventHandlerResult::OK;
 
   if (!keyToggledOn(keyState)) {
@@ -55,48 +55,52 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr
 
   tap_key(compose_key);
 
-  HungarianSymbol symbol = (HungarianSymbol)(mapped_key.raw - HUNGARIAN_FIRST);
+  HungarianSymbol symbol = (HungarianSymbol)(mapped_key.getRaw() - HUNGARIAN_FIRST);
   Key accent;
   uint8_t kc = 0;
 
+  accent.setFlags(KEY_FLAGS);
+  accent.setKeyCode(Key_Quote.getKeyCode());
+#if 0
   accent.flags = KEY_FLAGS;
   accent.keyCode = Key_Quote.raw;
+#endif
 
   switch (symbol) {
   case AA:
-    kc = Key_A.keyCode;
+    kc = Key_A.getKeyCode();
     break;
   case OA:
-    kc = Key_O.keyCode;
+    kc = Key_O.getKeyCode();
     break;
   case OU:
-    kc = Key_O.keyCode;
-    accent.flags |= SHIFT_HELD;
+    kc = Key_O.getKeyCode();
+    accent.setFlags(accent.getFlags() | SHIFT_HELD);
     break;
   case ODA:
-    kc = Key_O.keyCode;
-    accent.raw = Key_Equals.raw;
+    kc = Key_O.getKeyCode();
+    accent.setRaw(Key_Equals.getRaw());
     break;
   case EA:
-    kc = Key_E.keyCode;
+    kc = Key_E.getKeyCode();
     break;
   case UA:
-    kc = Key_U.keyCode;
+    kc = Key_U.getKeyCode();
     break;
   case UU:
-    kc = Key_U.keyCode;
-    accent.flags |= SHIFT_HELD;
+    kc = Key_U.getKeyCode();
+    accent.setFlags(accent.getFlags() | SHIFT_HELD);
     break;
   case UDA:
-    kc = Key_U.keyCode;
-    accent.raw = Key_Equals.raw;
+    kc = Key_U.getKeyCode();
+    accent.setRaw(Key_Equals.getRaw());
     break;
   case IA:
-    kc = Key_I.keyCode;
+    kc = Key_I.getKeyCode();
     break;
   }
 
-  if (accent.flags & SHIFT_HELD)
+  if (accent.getFlags() & SHIFT_HELD)
     handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, IS_PRESSED | INJECTED);
   else
     handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, WAS_PRESSED | INJECTED);
@@ -109,7 +113,8 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr
   else
     handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, WAS_PRESSED | INJECTED);
 
-  mapped_key = kc;
+  mapped_key.setFlags(0);
+  mapped_key.setKeyCode(kc);
 
   hid::sendKeyboardReport();
 
