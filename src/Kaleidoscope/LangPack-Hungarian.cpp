@@ -1,6 +1,6 @@
 /* -*- mode: c++ -*-
  * Kaleidoscope-LangPack-Hungarian -- Hungarian language support
- * Copyright (C) 2016, 2017  Gergely Nagy
+ * Copyright (C) 2016-2020  Gergely Nagy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@ namespace language {
 
 static void tap_key(Key key) {
   handleKeyswitchEvent(key, UnknownKeyswitchLocation, IS_PRESSED | INJECTED);
-  hid::sendKeyboardReport();
+  Kaleidoscope.hid().keyboard().sendReport();
   handleKeyswitchEvent(key, UnknownKeyswitchLocation, WAS_PRESSED | INJECTED);
-  hid::sendKeyboardReport();
+  Kaleidoscope.hid().keyboard().sendReport();
 }
 
 EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t keyState) {
@@ -50,8 +50,9 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr
     return EventHandlerResult::EVENT_CONSUMED;
   }
 
-  bool need_shift = hid::isModifierKeyActive(Key_LeftShift) ||
-                    ::OneShot.isModifierActive(Key_LeftShift);
+  bool need_shift =
+      Kaleidoscope.hid().keyboard().isModifierKeyActive(Key_LeftShift) ||
+      ::OneShot.isModifierActive(Key_LeftShift);
 
   tap_key(compose_key);
 
@@ -61,10 +62,6 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr
 
   accent.setFlags(KEY_FLAGS);
   accent.setKeyCode(Key_Quote.getKeyCode());
-#if 0
-  accent.flags = KEY_FLAGS;
-  accent.keyCode = Key_Quote.raw;
-#endif
 
   switch (symbol) {
   case AA:
@@ -104,7 +101,7 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr
     handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, IS_PRESSED | INJECTED);
   else
     handleKeyswitchEvent(Key_LeftShift, UnknownKeyswitchLocation, WAS_PRESSED | INJECTED);
-  hid::sendKeyboardReport();
+  Kaleidoscope.hid().keyboard().sendReport();
 
   tap_key(accent);
 
@@ -116,7 +113,7 @@ EventHandlerResult Hungarian::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr
   mapped_key.setFlags(0);
   mapped_key.setKeyCode(kc);
 
-  hid::sendKeyboardReport();
+  Kaleidoscope.hid().keyboard().sendReport();
 
   return EventHandlerResult::OK;
 }
